@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  password               String
+  role                   Role      @default(CLIENT)
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  phoneNumber            String?
+  dateOfBirth            DateTime
+  emailVerificationToken String?   @unique
+  emailVerified          DateTime?
+  firstname              String
+  lastname               String
+  addresses              Address[]
+  orders                 Order[]
+  reviews                Review[]
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  userId    String
+  street    String
+  city      String
+  zipCode   String
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  total     Decimal
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  status    OrderStatus @default(PENDING)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Decimal
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id              String          @id @default(uuid())
+  name            String
+  specs           String[]
+  description     String
+  stock           Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  categoryId      String
+  images          Json
+  isNew           Boolean?
+  isPromo         Boolean?
+  promoPercentage Float?
+  rating          Float?
+  reviewCount     Int?
+  OrderItem       OrderItem[]
+  category        Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  options         ProductOption[]
+  reviews         Review[]
+}
+
+model Option {
+  id       String          @id @default(uuid())
+  name     String          @unique
+  products ProductOption[]
+}
+
+model ProductOption {
+  id        String           @id @default(uuid())
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String // clé étrangère vers Product
+  option    Option           @relation(fields: [optionId], references: [id])
+  optionId  String // clé étrangère vers Option
+  variants  ProductVariant[]
+
+  @@unique([productId, optionId])
+}
+
+model ProductVariant {
+  id              String        @id @default(uuid())
+  quantity        Int
+  price           Decimal       @db.Decimal(10, 2)
+  ProductOptionId String // clé étrangère vers ProductOption
+  ProductOpt      ProductOption @relation(fields: [ProductOptionId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([ProductOptionId, quantity])
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  comment   String?
+  userId    String?
+  productId String?
+  createdAt DateTime @default(now())
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELED
+}

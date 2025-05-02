@@ -1,8 +1,12 @@
 @import "tailwindcss";
+/* @import "tailwindcss/preflight";
+@import "tailwindcss/utilities"; */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #0a0a0a;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 }
 
 @theme inline {
@@ -11,6 +15,19 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+@layer utilities {
+  .bg-gradient-light {
+    background-image: linear-gradient(to top, #fff2cd, #ed4254);
+  }
+  .bg-gradient-main {
+    background-image: linear-gradient(to right, #242B6F, #D00BA9);
+  }
+  .bg-gradient-light-reverse {
+    background-image: linear-gradient(to top, #ed4254, #fff2cd);
+  }
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -22,5 +39,26 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans) Arial, Helvetica, sans-serif;
+}
+
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet explorer */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Edge, Safari */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button {
+  cursor: pointer;
 }
