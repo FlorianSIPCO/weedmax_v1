@@ -67,7 +67,7 @@ const ProductCard = ({ product }: Props) => {
   const getUnit = () => {
     const cat = product.category?.name?.toLowerCase() || "";
     if (cat.includes("huile")) return "ml";
-    if (cat.includes("vape")) return null; // pas d'unité
+    if (cat.includes("box")) return null; // pas d'unité
     return "g";
   }
 
@@ -180,9 +180,9 @@ const ProductCard = ({ product }: Props) => {
           {/* Option Select */}
           {product.options.length > 1 ? (
             <select
-              className="text-gray-800 w-full p-2 rounded border text-sm"
-              value={selectedOption?.optionId}
-              onChange={(e) => handleOptionChange(e.target.value)}
+            className="text-gray-800 w-full p-2 rounded border text-sm"
+            value={selectedOption?.optionId}
+            onChange={(e) => handleOptionChange(e.target.value)}
             >
               {product.options.map((opt) => (
                 <option key={opt.optionId} value={opt.optionId}>
@@ -196,7 +196,7 @@ const ProductCard = ({ product }: Props) => {
           )}
           </div>
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-semibold mb-1">Quantité :</label>
           <select
             className="text-gray-800 w-full p-2 rounded border text-sm"
@@ -212,7 +212,41 @@ const ProductCard = ({ product }: Props) => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
+        {unit ? (
+          <>
+            <label className="block text-sm font-semibold mb-1">Quantité :</label>
+            <select
+              className="text-gray-800 w-full p-2 rounded border text-sm"
+              value={selectedVariant?.id}
+              onChange={(e) => handleVariantChange(e.target.value)}
+            >
+              {selectedOption?.variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {unit ? `${variant.quantity} ${unit} - ` : ""}
+                  {product.isPromo && product.promoPercentage
+                    ? (Number(variant.price) - (Number(variant.price) * product.promoPercentage) / 100).toFixed(2)
+                    : Number(variant.price).toFixed(2)} €
+                </option>
+              ))}
+            </select>
+          </>
+        ) : (
+          <>
+            <label className="block text-sm font-semibold mb-1">Couleur :</label>
+            <select
+              className="text-gray-800 w-full p-2 rounded border text-sm"
+              // onChange={(e) => {
+              //   const color = e.target.value;
+              //   // Logique si tu veux faire qqch avec la couleur choisie
+              // }}
+            >
+              {product.specs.map((spec, index) => (
+                <option key={index} value={spec}>{spec}</option>
+              ))}
+            </select>
+          </>
+        )}
       </div>
       <button 
         className="flex m-auto px-6 py-3 bg-red-500 cursor-pointer text-white rounded-lg hover:scale-105 transition"

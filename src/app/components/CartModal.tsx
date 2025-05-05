@@ -103,13 +103,23 @@ const CartModal = () => {
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold">{item.name}</h3>
                     
-                        {item.optionName && (
+                        {item.optionName && !item.name.toLocaleLowerCase().includes("box") && (
                           <p className="text-sm text-gray-400">Option : {item.optionName}</p>
                         )}
 
-                        <p className="test-sm text-gray-400">
-                          Variante : {item.variantQuantity} {item.name.toLocaleLowerCase().includes('huile') ? "ml" : "g"}
-                        </p>
+                        {/* Affiche les sepcs uniquement pour les vapes */}
+                        {item.name.toLocaleLowerCase().includes("box") && (
+                          <p className="test-sm text-gray-400">
+                            Couleur : rouge
+                          </p>
+                        )}
+
+                        {/* Affiche la variante sauf pour les vapes */}
+                        {!item.name.toLocaleLowerCase().includes("box") && (
+                          <p className="test-sm text-gray-400">
+                            Variante : {item.variantQuantity} {item.name.toLocaleLowerCase().includes('huile') ? "ml" : "g"}
+                          </p>
+                        )}
 
                         {/* Prix dynamique */}
                         {item.promoPercentage && item.promoPercentage > 0 ? (
